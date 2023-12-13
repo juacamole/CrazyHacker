@@ -31,7 +31,10 @@ public class Controller {
     @DeleteMapping("api/todo/{id}")
     public void DeleteDataById(@PathVariable String id) {
         service.DeleteById(id);
-
+    }
+    @PutMapping("api/undo")
+    public void undo(){
+        
     }
 }
 

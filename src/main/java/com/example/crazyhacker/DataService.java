@@ -11,9 +11,11 @@ import java.util.UUID;
 public class DataService {
 
     private final DataRepository repo;
+    private final TempRepository tepo;
 
-    public DataService(DataRepository repo) {
+    public DataService(DataRepository repo, TempRepository tepo) {
         this.repo = repo;
+        this.tepo = tepo;
     }
 
     public List<Data> findAll(){
@@ -21,6 +23,7 @@ public class DataService {
     }
     public List<Data> postData(Data data){
         Data toSave = new Data(data.description(), data.status(), UUID.randomUUID().toString());
+        tepo.save(null);
         return Collections.singletonList(repo.save(toSave));
     }
 
@@ -29,12 +32,17 @@ public class DataService {
     }
 
     public Optional<Data> updateById(String id, Data data) {
+
         repo.deleteById(id);
         Data toUpdate = new Data(data.description(), data.status(), id);
-       return Optional.of(repo.save(toUpdate));
+        tepo.save();
+        return Optional.of(repo.save(toUpdate));
     }
 
     public void DeleteById(String id) {
-         repo.deleteById(id);
+        Optional<Data> tosave = repo.findById(id);
+        TempData tempSave = new TempData(tosave.get().description(),tosave.get().status(), id);
+        tepo.save(tempSave);
+        repo.deleteById(id);
     }
 }
